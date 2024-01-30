@@ -102,5 +102,7 @@ theme: butterfly
 ## Docsht: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: https://gitee.com/tczja/zjaaa.gitee.io.git
+  repo: 
+  - https://gitee.com/tczja/zjaaa.gitee.io.git
+  - https://github.com/44528zja/44528zja.github.io.git
   branch: master
