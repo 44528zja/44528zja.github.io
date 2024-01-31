@@ -1,7 +1,7 @@
 ---
 title: markdown语法使用
 date: 2024-01-30 19:32:56
-tags: markdown typora
+tags: [markdown,typora]
 categories: 学习笔记
 ---
 

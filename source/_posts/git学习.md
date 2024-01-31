@@ -1,7 +1,7 @@
 ---
 title: git学习
 date: 2024-01-30 18:57:47
-tags: git linux
+tags: [git,linux]
 categories: 学习笔记
 ---
 
