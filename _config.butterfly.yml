@@ -55,7 +55,7 @@ code_word_wrap: false
 #   icon: link || the description || color
 social:
    fab fa-github: https://github.com/44528zja || Github || '#24292e'
-   fas fa-envelope: mailto:xxxxxx@gmail.com || Email || '#4a7dbe'
+   fas fa-envelope: https://github.com/44528zja || Email || '#4a7dbe'
 
 # Image (圖片設置)
 # --------------------------------------
