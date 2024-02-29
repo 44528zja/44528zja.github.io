@@ -740,3 +740,143 @@ select deptno,max(sal) maxsal from emp group by deptno;
 select e.ename,t.* from (select deptno,max(sal) maxsal from emp group by deptno) t join emp e on t.deptno = e.deptno and t.maxsal = e.sal;
 ```
 
+### 5.哪些人的薪资在部门的平均薪水之上
+
+```sql
+#先查出每个部门的平均薪水
+select deptno,avg(sal) avgsal from emp group by deptno;
+#将上表命名为t t表和emp e表进行连接
+#连接条件 t.deptno = e.deptno t.avgsal<e.sal
+select e.ename,e.deptno,e.sal from (select deptno,avg(sal) avgsal from emp group by deptno) t join emp e on t.deptno = e.deptno and t.avgsal< e.sal;
+```
+
+### 6.取得部门中所有人的平均的薪水等级
+
+```sql
+#先将emp表 e 与  salgrade表 s进行连接
+#连接条件为 e.sal beween losal and hisal
+select e.ename,e.sal,e.deptno,s.grade from emp e 
+join salgrade s  on e.sal between losal and hisal;
+#在基于以上结果按照deptno分组 求grade平均值
+select e.deptno,avg(s.grade) from emp e join salgrade s on e.sal between losal and hisal group by deptno;
+```
+
+### 7.不用分组函数(max)，取得最高薪水
+
+```sql
+#考虑到不能用max函数，可以使用desc降序排列，再通过limit取第一条记录
+select ename,sal from emp order by sal desc limit 1;
+#答案上有提到有另一种方式 表的自连接
+select sal from emp where sal not in(select distinct a.sal from emp a join emp b on a.sal < b.sal);
+```
+
+### 8.取得平均薪水最高的部门的部门编号
+
+```sql
+#获取每个部门平均薪水
+select deptno,avg(sal) from emp group by deptno;
+#降序排选第一个
+select deptno,avg(sal) avgsal from emp group by deptno order by avgsal desc limit 1;
+#答案提供了第二种方式通过max进行获取
+select max(t.avgsal) from (select deptno,avg(sal) avgsal from emp group by deptno) t ;
+```
+
+### 9.取得平均薪水最高的部门的部门的名称
+
+>下面这个是错误示范 凡事别先想临时表解决！ 复杂化了
+
+```sql
+#获取每个部门的部门编号以及平均薪水
+select deptno,avg(sal) from emp group by deptno;
+#与部门表d进行连接 连接条件d.deptno =t.deptno
+#在desc降序排序 取limit一条记录
+select d.dname,t.deptno,t.avgsal from (select deptno,avg(sal) avgsal from emp group by deptno) t join dept d on d.deptno=t.deptno order by t.avgsal desc limit 1 ;
+```
+
+>正确示范
+
+```sql
+#获取每个部门的部门编号以及平均薪水
+select deptno,avg(sal) from emp group by deptno;
+#将结果倒序，取第一条记录
+select deptno,avg(sal) avgsal from emp group by deptno order by avgsal desc limit 1;
+#自连接dept表 连接条件deptno相等 得到dept名字
+select e.deptno,d.dname,avg(sal) avgsal from emp e join dept d on e.deptno = d.deptno group by d.deptno order by avgsal desc limit 1;
+```
+
+### 10.求平均薪水的等级最低的部门名称
+
+```sql
+#求每个部门的平均薪水
+select deptno,avg(sal) from emp group by deptno;
+#根据上面结果 自连接salgrade表s 
+#条件t.avgsal beween s.losal and s.hisal
+select t.deptno,s.grade from (select deptno,avg(sal) avgsal from emp group by deptno) t join salgrade s on t.avgsal between s.losal and s.hisal;
+#发现没部门名称，再join连接dept表d 条件deptnp相等
+#最后升序排列取第一行
+select t.deptno,d.dname,s.grade from (select deptno,avg(sal) avgsal from emp group by deptno) t join salgrade s on t.avgsal between s.losal and s.hisal join dept d on t.deptno =d.deptno order by s.grade asc limit 1;
+```
+
+### 11.取得比普通员工的最高薪水还要高的领导人姓名
+
+```sql
+#取得领导人名单
+select distinct mgr from emp where mgr is not null;
+#取得所有员工除去领导以外的最高薪水值
+select max(sal) from emp where empno not in(select distinct mgr from emp where mgr is not null);
+#找出高于1600的
+select ename,sal from emp where sal >(select max(sal) from emp where empno not in(select distinct mgr from emp where mgr is not null));
+```
+
+### 12.取得薪水最高的前五名员工
+
+```sql
+select ename,sal from emp order by sal desc limit 5;
+```
+
+### 13.取得薪水最高的第六到第十名员工
+
+```sql
+select ename,sal from emp order by sal desc limit 5,5;
+```
+
+### 14.取得最后入职的5名员工
+
+```sql
+select ename,hiredate from emp order by hiredate desc limit 5;
+```
+
+### 15.取得每个薪水等级有多少员工
+
+```sql
+#找出每个员工的薪水等级
+select e.ename,s.grade from emp e join salgrade s on e.sal between s.losal and s.hisal;
+#分组进行count
+select s.grade,count(*) from emp e join salgrade s on e.sal between s.losal and s.hisal group by s.grade;
+```
+
+### 16.面试题
+
+>13、面试题：
+>有 3 个表 S(学生表)，C（课程表），SC（学生选课表）
+>S（SNO，SNAME）代表（学号，姓名）
+>C（CNO，CNAME，CTEACHER）代表（课号，课名，教师）
+>SC（SNO，CNO，SCGRADE）代表（学号，课号，成绩）
+>问题：
+>1，找出没选过“黎明”老师的所有学生姓名。
+>2，列出 2 门以上（含2 门）不及格学生姓名及平均成绩。
+>3，即学过 1 号课程又学过 2 号课所有学生的姓名。
+
+```sql
+#第1小问
+#首先找出黎明老师的课程号
+select cno from c where cteacher = '黎明';
+#找出没有选黎明老师课程号的学号
+select sno from sc where cno not in(selct cno from c where cteacher='黎明');
+#自连接s表 查询姓名
+select sname from s join (select sno from sc where cno not in(select cno from c where cteacher='黎明')) t on s.sno=t.sno;
+
+#第二小问
+
+```
+
