@@ -54,6 +54,8 @@ git pull orgin master
 git push orgin master
 #从别的库克隆下来 会自动生成一个remote远程名
 git clone git@github.com
+# 查看远程仓库
+gi
 ```
 
 ## 代码回滚
