@@ -39,7 +39,7 @@ git init
 #将想要的文件add至暂存区
 git add a.txt
 #如果是想要add全部文件的话
-git add -all
+git add --all
 #查看文件状态
 git status
 #将暂存区文件添加到本地存储库
@@ -62,7 +62,7 @@ gi
 
 ```bash
 #通过版本号回滚
-git reset -hard 000091
+git reset --hard 000091
 #恢复上次提交的版本
 git reset HEAD^
 #恢复上上次提交的版本 以此类推
